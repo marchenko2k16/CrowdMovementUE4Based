@@ -5,7 +5,7 @@ Grid::~Grid()
 {
 	for (auto& NodeRow : NodePool)
 	{
-		for (auto& Node: NodeRow)
+		for (auto& Node : NodeRow)
 		{
 			delete Node;
 		}
@@ -72,11 +72,11 @@ TArray<GraphNode*> Grid::GetNodeNeighbors(const GraphNode* InNode)
 	TArray<GraphNode*> Neighbors;
 
 	const auto NodeIndex = InNode->GetIndex();
-	for (int Row = NodeIndex.Key - 1; Row <= NodeIndex.Key + 1; Row++)
+	for (int Row = NodeIndex.Key-1; Row<=NodeIndex.Key+1; Row++)
 	{
-		for (int Column = NodeIndex.Value- 1; Column <= NodeIndex.Value + 1; Column++)
+		for (int Column = NodeIndex.Value-1; Column<=NodeIndex.Value+1; Column++)
 		{
-			if (Row == NodeIndex.Key && Column == NodeIndex.Value)
+			if (Row==NodeIndex.Key&&Column==NodeIndex.Value)
 			{
 				continue;
 			}
@@ -91,11 +91,12 @@ TArray<GraphNode*> Grid::GetNodeNeighbors(const GraphNode* InNode)
 	return Neighbors;
 }
 
+// todo : am : get rid of this tricky smelly code :(
 void Grid::ResetCalculations()
 {
 	for (auto& NodeRow : NodePool)
 	{
-		for (auto& Node: NodeRow)
+		for (auto& Node : NodeRow)
 		{
 			Node->SetParentNode(nullptr);
 			Node->SetHCost(0.f);

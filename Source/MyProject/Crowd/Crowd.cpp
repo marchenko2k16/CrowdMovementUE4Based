@@ -14,27 +14,20 @@
 #include "MyProjectGameMode.h"
 
 #include "Crowd/Additional/CrowdFormation.h"
+#include "Crowd/Additional/CrowdMovementRequest.h"
+#include "AITestSuite/Public/AITestsCommon.h"
 
 Crowd::Crowd()
-{
-	//UWorld::GetWorld()
-	//UGameplayStatics::GetGameMode();
-	// TODO Finish
-}
+{}
 
 Crowd::~Crowd()
 {
 	delete Formation;
-	//AgentPool.Reset();
-	//for (const auto & Agent : AgentPool)
-	//{
-	//	delete Agent;
-	//}
 }
 
 void Crowd::ReinitCrowdDirector()
 {
-	ACrowdDirector* LocalCrowdDirector = AAgentSpawner::SpawnCrowdDirector(AgentPool.Last()->GetWorld());
+	ACrowdDirector* LocalCrowdDirector = AAgentSpawner::SpawnCrowdDirector(Formation->GetAgentPoolMutable().Last().Last()->GetWorld());
 
 	if (!LocalCrowdDirector)
 	{
@@ -44,85 +37,81 @@ void Crowd::ReinitCrowdDirector()
 	CrowdDirector->SetDirectedCrowd(this);
 }
 
-TArray<AAgent*>& Crowd::GetAgentPoolMutable()
+TArray<TArray<AAgent*>>& Crowd::GetAgentPoolMutable()
 {
-	return AgentPool;
+	return Formation->GetAgentPoolMutable();
 }
 
-const TArray<AAgent*>& Crowd::GetAgentPoolConst() const
+TArray<TArray<AAgent*>>& Crowd::GetAgentPoolConst() const
 {
-	return AgentPool;
+	return Formation->GetAgentPoolMutable();
 }
 
-void Crowd::SetAgentPool(TArray<AAgent*> InAgents)
+TArray<TArray<FVector>>& Crowd::GetCrowdOffsetsMutable() const
 {
-	AgentPool = InAgents;
+	return Formation->GetOffsetsMutable();
 }
 
-void Crowd::SetCrowdMovementGoal(const FVector& GoalLocation)
+TArray<TArray<FVector>>& Crowd::GetCrowdOffsetsConst() const
 {
-	//TArray<FVector> GoalLocations = GenerateLocationPointsNearGoalLocation(GoalLocation);
-	//SetCrowdMovementGoal(GoalLocations);
-	for (const auto& CrowdAgent : AgentPool)
+	return Formation->GetOffsetsMutable();
+}
+
+void Crowd::SetCrowdFormation(CrowdFormation* InFormation)
+{
+	Formation = MakeShared<CrowdFormation>(InFormation);
+}
+
+void Crowd::RequestMovementToGoal(const FVector& GoalLocation)
+{
+	CrowdMovementRequest* MovementRequest = nullptr;
+
+	// todo : am : refactor 
+	const auto AIHelperWorld = FAITestHelpers::GetWorld();
+	const auto World = Formation->GetAgentPoolMutable()[0][0]->GetWorld();
+	if (AIHelperWorld==World)
 	{
-		CrowdAgent->MoveToLocation(GoalLocation);
+		int j = 134;
 	}
+
+	MovementRequest->SetCrowdMovementGoalLocation(GoalLocation);
+	MovementRequest->SetCrowdMovementRequestTimestamp(World->GetTimeSeconds());
+	CrowdDirector->AddMovementRequest(MovementRequest);
 }
 
-void Crowd::SetCrowdMovementGoal(const TArray<FVector>& GoalLocations)
+void Crowd::AbortCrowdMovement()
 {
-	AStarSolver PathSolver;
-	const auto Grid = AMyProjectGameMode::GetGridGenerator()->GetGlobalGridData();
-
-	const auto PositionsCount = GoalLocations.Num();
-
-	for(int32 Index = 0; Index < PositionsCount; Index++)
+	for (const auto& CrowdFormationColumn : Formation->GetAgentPoolMutable())
 	{
-		const auto GoalLocationNode = AMyProjectGameMode::GetGridGenerator()->GetGraphNodeByLocation(GoalLocations[Index]);
-		const auto CurrentAgentLocation = AgentPool[Index]->GetLocation();
-		const auto PlayerLocationNode = AMyProjectGameMode::GetGridGenerator()->GetGraphNodeByLocation(CurrentAgentLocation);
-		
-
-		const auto SearchResult = PathSolver.FindPath(Grid, PlayerLocationNode, GoalLocationNode, AgentPool[Index]);
-		Path* AgentPath = SearchResult.Get<1>();
-
-		AgentPool[Index]->SetPath(AgentPath);
-		const auto& NextNode = AgentPath->GetNextGraphNode();
-		if (!NextNode)
+		for (const auto& Agent : CrowdFormationColumn)
 		{
-			continue;
-		}
-		AgentPool[Index]->MoveToLocation(NextNode->GetLocation());
-	}
-}
-
-void Crowd::AbortCrowdMovementMovement()
-{
-	for (const auto& CrowdAgent : AgentPool)
-	{
-		if (CrowdAgent->IsValidLowLevel())
-		{
-			CrowdAgent->AbortMovement();
+			if (Agent->IsValidLowLevel())
+			{
+				Agent->AbortMovement();
+			}
 		}
 	}
 }
 
-void Crowd::Init()
-{}
-
-FVector Crowd::GetMassCenter() const
+FVector Crowd::GetCrowdMassCenter() const
 {
 	FVector MassCenter = FVector::ZeroVector;
 
-	const int32 AgentsCount = AgentPool.Num();
+	const int32 AgentsCount = Formation->GetCount();
 	if (AgentsCount<=0)
 	{
 		return MassCenter;
 	}
 
-	for (const auto& CrowdAgent : AgentPool)
+	for (const auto& CrowdFormationColumn : Formation->GetAgentPoolMutable())
 	{
-		MassCenter += CrowdAgent->GetLocation();
+		for (const auto& Agent : CrowdFormationColumn)
+		{
+			if (Agent->IsValidLowLevel())
+			{
+				MassCenter += Agent->GetActorLocation();
+			}
+		}
 	}
 
 	MassCenter /= AgentsCount;

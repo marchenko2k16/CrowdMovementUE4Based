@@ -6,7 +6,8 @@ class AAgent;
 
 class  RectangularCrowdFormation : public CrowdFormation
 {
-	RectangularCrowdFormation(FVector CrowdCenter, int32 CrowdMembersCount);
+	// todo : am : finilize
+	RectangularCrowdFormation(FVector CrowdCenter, int32 CrowdMembersCount = 100);
 	virtual ~RectangularCrowdFormation();
-	//TArray<FVector> GenerateAgentColumnsLocations(FVector CrowdCenter, int32 CrowdMembersCount) override;
+	void GenerateAgentColumnsLocations(FVector CrowdCenter, int32 CrowdMembersCount) override;
 };

@@ -9,5 +9,5 @@ class  CircularCrowdFormation : public CrowdFormation
 	
 	CircularCrowdFormation(FVector CrowdCenter, int32 CrowdMembersCount);
 	virtual ~CircularCrowdFormation();
-	//TArray<FVector> GenerateAgentColumnsLocations(FVector CrowdCenter, int32 CrowdMembersCount) override;
+	void GenerateAgentColumnsLocations(FVector CrowdCenter, int32 CrowdMembersCount) override;
 };

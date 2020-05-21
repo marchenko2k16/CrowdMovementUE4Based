@@ -4,13 +4,15 @@
 #include "StrongObjectPtr.h"
 
 class AAgent;
-
 class ACrowdDirector;
+class CrowdFormation;
+
+class Path;
 
 class Crowd
 {
 private:
-	class CrowdFormation* Formation = nullptr;
+	TSharedPtr<CrowdFormation> Formation = nullptr;
 	
 protected:
 
@@ -23,15 +25,16 @@ public:
 
 	void ReinitCrowdDirector();
 
-	TArray<AAgent*>& GetAgentPoolMutable();
-	const TArray<AAgent*>& GetAgentPoolConst() const;
-	void SetAgentPool(TArray<AAgent*> InAgents);
+	TArray<TArray<AAgent*>>& GetAgentPoolMutable();
+	TArray<TArray<AAgent*>>& GetAgentPoolConst() const;
 
-	void SetCrowdMovementGoal(const FVector& GoalLocation);
-	void SetCrowdMovementGoal(const TArray<FVector>& GoalLocations);
-	void AbortCrowdMovementMovement();
+	TArray<TArray<FVector>>& GetCrowdOffsetsMutable() const;
+	TArray<TArray<FVector>>& GetCrowdOffsetsConst() const;
 
-	void Init();
-	
-	FVector GetMassCenter() const;
+	void SetCrowdFormation(CrowdFormation* InFormation);
+
+	void RequestMovementToGoal(const FVector& GoalLocation);
+	void AbortCrowdMovement(); // todo : am : mb add soft/hard stop
+
+	FVector GetCrowdMassCenter() const;
 };

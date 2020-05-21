@@ -14,10 +14,10 @@ public:
 	Grid() = default;
 	virtual ~Grid();
 	//Grid(const TArray<TArray<GraphNode*>>& NodePool);
-	
+
 	const TArray<TArray<GraphNode*>>& GetNodePoolConst() const override;
 	TArray<TArray<GraphNode*>>& GetNodePoolMutable() override;
-	
+
 	void SetGraph(TArray<TArray<GraphNode*>>& NodePool) override;
 
 	GraphNode* GetGraphNodeMutable(int32 Row, int32 Column) override;

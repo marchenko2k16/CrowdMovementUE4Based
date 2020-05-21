@@ -24,12 +24,15 @@ protected:
 	UPROPERTY(EditAnywhere)
 	EFormationType FormationType = EFormationType::Rectangular;
 
-
-	TArray<FVector> GenerateSpawnLocations() const;
+	int32 SpawnedCrowdCount = 0;
+	int32 SpawnAgentCount = 0;
+	
 public:
 
 	UFUNCTION(CallInEditor)
-	void SpawnAgents();
+	void SpawnCrowd();
+
+	AAgent* SpawnAgents(const FVector& SpawnLocation = FVector::ZeroVector, const FRotator& SpawnRotation = FRotator::ZeroRotator);
 
 	static ACrowdDirector* SpawnCrowdDirector(UWorld* GameWorld);
 };

@@ -22,39 +22,39 @@ TTuple<ESearchResult, Path*> AStarSolver::FindPath(Grid* Grid, GraphNode* StartN
 
 	OpenNodes.Reset();
 	ClosedNodes.Reset();
-	
+
 	OpenNodes.Emplace(StartNode);
 
 	ESearchResult SearchResult = ESearchResult::Failed;
 	GraphNode* CurrentNode = nullptr;
 
-	while (OpenNodes.Num() != 0)
+	while (OpenNodes.Num()!=0)
 	{
 		CurrentNode = GetLowestFCostNode(OpenNodes);
-		
+
 		OpenNodes.RemoveSingleSwap(CurrentNode);
 		ClosedNodes.Emplace(CurrentNode);
 
-		if (CurrentNode == EndNode)
+		if (CurrentNode==EndNode)
 		{
 			SearchResult = ESearchResult::Success;
 			break;
 		}
-		
+
 		const auto Neighbors = Grid->GetNodeNeighbors(CurrentNode);
 		for (const auto& CurrentNeighbor : Neighbors)
-		{	
-			if (!CurrentNeighbor->IsTraversable() || ClosedNodes.Contains(CurrentNeighbor))
+		{
+			if (!CurrentNeighbor->IsTraversable()||ClosedNodes.Contains(CurrentNeighbor))
 			{
-				continue;	
+				continue;
 			}
-			const float_t NewGCost = CurrentNode->GetGCost() + CurrentNeighbor->GetStepCost();
+			const float_t NewGCost = CurrentNode->GetGCost()+CurrentNeighbor->GetStepCost();
 			const float_t NewHCost = Misc::EuclidHeuristics(CurrentNeighbor->GetLocation(), EndNode->GetLocation());
-			const float_t NewFCost = NewGCost + NewHCost;
-			
+			const float_t NewFCost = NewGCost+NewHCost;
+
 			const bool IsNeighborAlreadyOpened = OpenNodes.Contains(CurrentNeighbor);
-			
-			if (!IsNeighborAlreadyOpened || CurrentNeighbor->GetFCost() < NewFCost)
+
+			if (!IsNeighborAlreadyOpened||CurrentNeighbor->GetFCost()<NewFCost)
 			{
 				CurrentNeighbor->SetParentNode(CurrentNode);
 				CurrentNeighbor->SetGCost(NewGCost);
@@ -64,16 +64,16 @@ TTuple<ESearchResult, Path*> AStarSolver::FindPath(Grid* Grid, GraphNode* StartN
 			if (!IsNeighborAlreadyOpened)
 			{
 				OpenNodes.Emplace(CurrentNeighbor);
-			}			
+			}
 		}
 	}
-	
+
 	const TArray<GraphNode*> PathPoints = UnpackBuildPath(CurrentNode, Agent);
 	Path* GeneratedPath = new Path();
 
 	GeneratedPath->PathGraphNodes = PathPoints;
 	Grid->ResetCalculations();
-	return TTuple<ESearchResult,Path*>(SearchResult, GeneratedPath);
+	return TTuple<ESearchResult, Path*>(SearchResult, GeneratedPath);
 }
 
 GraphNode* AStarSolver::GetLowestFCostNode(const TArray<GraphNode*>& InOpenNodes) const
@@ -82,9 +82,9 @@ GraphNode* AStarSolver::GetLowestFCostNode(const TArray<GraphNode*>& InOpenNodes
 	float MinCost = 0.f;
 	int32 MinNodeIndex = 0;
 
-	for (int32 Index = MinNodeIndex + 1; Index < OpenNodesCount; Index++)
+	for (int32 Index = MinNodeIndex+1; Index<OpenNodesCount; Index++)
 	{
-		if (InOpenNodes[Index]->GetFCost() < InOpenNodes[MinNodeIndex]->GetFCost())
+		if (InOpenNodes[Index]->GetFCost()<InOpenNodes[MinNodeIndex]->GetFCost())
 		{
 			MinNodeIndex = Index;
 		}
@@ -110,8 +110,10 @@ void AStarSolver::DrawStartAndGoal(const AAgent* Agent, const GraphNode* EndNode
 {
 	if (ConsoleManager::bVisualDebugGoalPositions)
 	{
-		DrawDebugLine(Agent->GetWorld(), EndNode->GetLocation() + Constants::ZOffset * 2, EndNode->GetLocation() - Constants::ZOffset, FColor::White, true, 30.f, 0, 20);
-		DrawDebugLine(Agent->GetWorld(), StartNode->GetLocation() + Constants::ZOffset * 2, StartNode->GetLocation() - Constants::ZOffset, FColor::White, true, 30.f, 0, 20);
+		DrawDebugLine(Agent->GetWorld(), EndNode->GetLocation()+Constants::ZOffset*2, EndNode->GetLocation()-Constants::ZOffset,
+		              FColor::White, true, 30.f, 0, 20);
+		DrawDebugLine(Agent->GetWorld(), StartNode->GetLocation()+Constants::ZOffset*2, StartNode->GetLocation()-Constants::ZOffset,
+		              FColor::White, true, 30.f, 0, 20);
 	}
 }
 
@@ -121,8 +123,8 @@ void AStarSolver::DrawBuiltPath(TArray<GraphNode*>& ResultPath, const AAgent* Ag
 	{
 		for (const auto& Node : ResultPath)
 		{
-			DrawDebugLine(Agent->GetWorld(), Node->GetLocation() + Constants::ZOffset, Node->GetLocation() - Constants::ZOffset, FColor::Orange, false, 30.f, 0, 20);
+			DrawDebugLine(Agent->GetWorld(), Node->GetLocation()+Constants::ZOffset, Node->GetLocation()-Constants::ZOffset,
+			              FColor::Orange, false, 30.f, 0, 20);
 		}
 	}
-
 }

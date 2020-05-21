@@ -9,37 +9,31 @@
 #include "NavigationSystem.h"
 #include "DrawDebugHelpers.h"
 
-void AAgent::OnMoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type MovementResult)
+AAgent::AAgent()
 {
-	AAIController* AIController = Cast<AAIController>(GetController());
-	if (!AIController)
-	{
-		return;
-	}
-	
-	if (MovementResult != EPathFollowingResult::Success)
-	{
-		MovementInterruptionTime = GetWorld()->GetRealTimeSeconds();
-		bMovementInterrupter = true;
-		AIController->ReceiveMoveCompleted.Clear();
-		return;	
-	}
+	// Set size for collision capsule
+	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
-	bMovementInterrupter = false;
-	AIController->ReceiveMoveCompleted.Clear();
+	// Don't rotate when the controller rotates. Let that just affect the camera.
+	//bUseControllerRotationPitch = false;
+	//bUseControllerRotationYaw = false;
+	//bUseControllerRotationRoll = false;
+	//
+	//// Configure character movement
+	//GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
+	//GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
+	//GetCharacterMovement()->JumpZVelocity = 600.f;
+	//GetCharacterMovement()->AirControl = 0.2f;
 
-	const auto NextGraphNode = CurrentPath->GetNextGraphNode();
-	if (!NextGraphNode)
-	{
-		return;
-	}
-	const auto NextMovementLocation = NextGraphNode->GetLocation();
-	MoveToLocation(NextMovementLocation);
+	GetCharacterMovement()->MaxAcceleration = 100000.f;
 }
 
-void AAgent::BeginPlay()
+AAgent::~AAgent()
+{}
+
+void AAgent::BeginDestroy()
 {
-	Super::BeginPlay();
+	Super::BeginDestroy();
 }
 
 void AAgent::Tick(float DeltaTime)
@@ -47,7 +41,7 @@ void AAgent::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	constexpr float TimeToPassSec = 0.5f;
-	if (bMovementInterrupter && MovementInterruptionTime <= GetWorld()->GetTimeSeconds() - TimeToPassSec)
+	if (bMovementInterrupter&&MovementInterruptionTime<=GetWorld()->GetTimeSeconds()-TimeToPassSec)
 	{
 		const auto Node = CurrentPath->GetNextGraphNodeSafe();
 		if (!Node)
@@ -57,10 +51,6 @@ void AAgent::Tick(float DeltaTime)
 
 		MoveToLocation(Node->GetLocation());
 	}
-
-	// todo : add delayed move to
-	//const FVector Offset = {15,15,0};
-	//MoveToLocation(GetLocation() + Offset);
 }
 
 void AAgent::SetAgentIndex(int32 Index)
@@ -110,34 +100,35 @@ void AAgent::AbortMovement() const
 	}
 }
 
-AAgent::AAgent()
+void AAgent::OnMoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type MovementResult)
 {
-	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (!AIController)
+	{
+		return;
+	}
 
-	// Don't rotate when the controller rotates. Let that just affect the camera.
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
+	if (MovementResult!=EPathFollowingResult::Success)
+	{
+		MovementInterruptionTime = GetWorld()->GetRealTimeSeconds();
+		bMovementInterrupter = true;
+		AIController->ReceiveMoveCompleted.Clear();
+		return;
+	}
 
-	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
-	GetCharacterMovement()->JumpZVelocity = 600.f;
-	GetCharacterMovement()->AirControl = 0.2f;
+	bMovementInterrupter = false;
+	AIController->ReceiveMoveCompleted.Clear();
 
-	GetCharacterMovement()->MaxAcceleration = 100000.f;
+	const auto NextGraphNode = CurrentPath->GetNextGraphNode();
+	if (!NextGraphNode)
+	{
+		return;
+	}
+	const auto NextMovementLocation = NextGraphNode->GetLocation();
+	MoveToLocation(NextMovementLocation);
 }
 
-void AAgent::BeginDestroy()
+void AAgent::BeginPlay()
 {
-	Super::BeginDestroy();
-}
-
-void AAgent::Init()
-{}
-
-FVector AAgent::GetLocation() const
-{
-	return GetActorLocation();
+	Super::BeginPlay();
 }

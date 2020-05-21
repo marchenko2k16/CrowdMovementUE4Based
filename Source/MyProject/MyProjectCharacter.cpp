@@ -1,8 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-
 #include "MyProjectCharacter.h"
-
 
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
@@ -18,7 +16,6 @@
 //
 #include "Crowd/AgentSpawner.h"
 #include "Crowd/Crowd.h"
-#include "Misc/Misc.h"
 #include "Kismet/GameplayStatics.h"
 #include "MyProjectGameMode.h"
 //
@@ -51,7 +48,10 @@ AMyProjectCharacter::AMyProjectCharacter()
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	FollowCamera->
+		SetupAttachment(
+			CameraBoom,
+			USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
@@ -85,14 +85,14 @@ void AMyProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AMyProjectCharacter::OnResetVR);
-	
+
 	PlayerInputComponent->BindAction("MoveCrowd", IE_Pressed, this, &AMyProjectCharacter::MoveCrowdToPlayer);
 }
 
+
+// todo : am : this kind of code should be called from crowd.
 void AMyProjectCharacter::MoveCrowdToPlayer()
 {
-	
-
 	auto Crowd = AMyProjectGameMode::GetCrowd();
 	if (!Crowd)
 	{
@@ -100,13 +100,7 @@ void AMyProjectCharacter::MoveCrowdToPlayer()
 	}
 
 	const FVector CurrentLocation = GetActorLocation();
-	Misc::SetCrowdMovementToPosition(CurrentLocation, Crowd);
-	
-	//const auto& SpawnedAgents = AAgentSpawner::GetSpawnedAgents();
-	//for (const auto& Agent : SpawnedAgents)
-	//{
-	//	Agent->MoveToLocation(CurrentLocation);
-	//}
+	Crowd->RequestMovementToGoal(CurrentLocation);
 }
 
 void AMyProjectCharacter::OnResetVR()
@@ -116,29 +110,29 @@ void AMyProjectCharacter::OnResetVR()
 
 void AMyProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		Jump();
+	Jump();
 }
 
 void AMyProjectCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		StopJumping();
+	StopJumping();
 }
 
 void AMyProjectCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	AddControllerYawInput(Rate*BaseTurnRate*GetWorld()->GetDeltaSeconds());
 }
 
 void AMyProjectCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	AddControllerPitchInput(Rate*BaseLookUpRate*GetWorld()->GetDeltaSeconds());
 }
 
 void AMyProjectCharacter::MoveForward(float Value)
 {
-	if ((Controller != NULL) && (Value != 0.0f))
+	if ((Controller!=NULL)&&(Value!=0.0f))
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -152,7 +146,7 @@ void AMyProjectCharacter::MoveForward(float Value)
 
 void AMyProjectCharacter::MoveRight(float Value)
 {
-	if ( (Controller != NULL) && (Value != 0.0f) )
+	if ((Controller!=NULL)&&(Value!=0.0f))
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();

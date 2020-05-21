@@ -7,7 +7,11 @@
 class AAgent;
 class Grid;
 class GraphNode;
+
 struct Path;
+
+// todo : am : make pre allocation of arrays
+// todo : am : try to find way to avoid graph fields reset to defaults and make some lightweight structure to be contained in OpenClosed/ClosedNodes while building path
 
 class AStarSolver
 {

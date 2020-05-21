@@ -7,8 +7,11 @@
 
 #include "CrowdDirector.generated.h"
 
-struct Path;
+
+class AAgent;
 class Crowd;
+
+struct Path;
 
 
 class CrowdMovementRequest;
@@ -25,7 +28,7 @@ private:
 
 	Crowd* DirectedCrowd = nullptr;
 
-	TQueue<TUniquePtr<CrowdMovementRequest>> MovementRequests;
+	TUniquePtr<CrowdMovementRequest> MovementRequest;
 
 protected:
 
@@ -35,24 +38,25 @@ public:
 	void SetDirectedCrowd(Crowd* InDirectedCrowd);
 	void Tick(float DeltaTime) override;
 
+	void ProcessCrowdMovementRequest();
+
+	void AddMovementRequest(CrowdMovementRequest* InMovementRequest);
+	void ProcessCrowdColumnMovementRequest();
+
+	void SetCrowdColumnMovement(const TArray<AAgent*>& CurrentUnprocessedCrowdColumn, const TArray<FVector>& ColumnGoalLocations) const;
+	void SetAgentMovement(AAgent* Agent, const FVector& AgentLocation, const FVector& GoalLocation) const;
+
+	void PerformAStarMovement(const FVector& AgentLocation, const FVector& GoalLocation, AAgent* Agent) const;
+
 	void SerializePath(Path* Path);
 	Path* GetSerializedPath(int32 AgentID);
 
 	void SetCrowdMovement(FVector);
 
+	void OnNavigationUpdate(const FBox& Bounds);
 	void ReorganizeCrowdMovement();
 
-	void Init()
-	{
-		
-	}
-
-	void OnNavigationUpdate(const FBox& Bounds)
-	{
-		ReorganizeCrowdMovement();
-	}
-
-	void UpdatePathMap();
+	void UpdateSerializedPathes();
 
 	virtual void BeginDestroy() override;
 };

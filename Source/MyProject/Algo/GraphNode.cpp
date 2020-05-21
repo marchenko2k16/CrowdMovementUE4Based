@@ -53,7 +53,7 @@ float_t GraphNode::GetHCost() const
 
 float_t GraphNode::GetFCost() const
 {
-	return GCost + HCost;
+	return GCost+HCost;
 }
 
 float_t GraphNode::GetStepCost() const
@@ -83,5 +83,5 @@ EGraphNodeTraversability GraphNode::GetTraversability() const
 
 bool GraphNode::IsTraversable() const
 {
-	return Traversability == EGraphNodeTraversability::Traversable;
+	return Traversability==EGraphNodeTraversability::Traversable;
 }
