@@ -24,11 +24,14 @@ void AAgentSpawner::SpawnCrowd()
 		Formation = new RectangularCrowdFormation(SpawnCenter);
 	}
 
-	Formation->AgentPool.Reserve(Formation->Offsets.Num());
-
+	// todo : am : clean it !!!
+	//Formation->AgentPool.Reserve(Formation->Offsets.Num());
+	//Formation->AgentPool.SetNumUninitialized(Formation->Offsets.Num());
+	Formation->AgentPool.Emplace(TArray<AAgent*>());
 	for (int32 ColumnIndex = 0; ColumnIndex<Formation->GetOffsetsMutable().Num(); ColumnIndex++)
 	{
-		Formation->AgentPool.Reserve(Formation->Offsets[ColumnIndex].Num());
+		//Formation->AgentPool.Reserve(Formation->Offsets[ColumnIndex].Num());
+		//Formation->AgentPool.SetNumUninitialized(Formation->Offsets[ColumnIndex].Num());
 
 		for (const auto& CurrentOffset : Formation->Offsets[ColumnIndex])
 		{

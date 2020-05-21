@@ -56,7 +56,8 @@ void Crowd::SetCrowdFormation(CrowdFormation* InFormation)
 
 void Crowd::RequestMovementToGoal(const FVector& GoalLocation)
 {
-	CrowdMovementRequest* MovementRequest = nullptr;
+	// TODO : AM : make smart pointer
+	CrowdMovementRequest* MovementRequest = new CrowdMovementRequest();
 
 	// todo : am : refactor and find simplier way
 	UWorld* World = Formation->GetAgentPoolMutable()[0][0]->GetWorld();

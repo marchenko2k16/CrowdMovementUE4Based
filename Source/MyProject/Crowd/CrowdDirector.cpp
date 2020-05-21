@@ -16,6 +16,7 @@ void ACrowdDirector::BeginPlay()
 {
 	Super::BeginPlay();
 	UNavigationSystemV1::NavigationDirtyEvent.AddUObject(this, &ACrowdDirector::OnNavigationUpdate);
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void ACrowdDirector::SetDirectedCrowd(Crowd* InDirectedCrowd)
