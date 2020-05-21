@@ -16,8 +16,9 @@ class CrowdMovementRequest
 
 public:
 
-	void SetCrowdMovementGoalLocation(const FVector& InGoalLocation);
-	void SetCrowdMovementRequestTimestamp(float Timestamp);
+	void SetGoalLocation(const FVector& InGoalLocation);
+	void SetRequestTimestamp(float Timestamp);
+	void SetFormation(TSharedPtr<CrowdFormation> InFormation);
 
 	TArray<AAgent*>& GetNextUnprocessedFormationColumn() const;
 	TArray<FVector>& GetNextUnprocessedLocations() const;

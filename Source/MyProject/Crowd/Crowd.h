@@ -20,8 +20,8 @@ class Crowd
 {
 private:
 	// todo : am : try to find way to make shared
-	//TSharedPtr<CrowdFormation> Formation = nullptr;
-	CrowdFormation* Formation = nullptr;
+	TSharedPtr<CrowdFormation> Formation = nullptr;
+	//CrowdFormation* Formation = nullptr;
 	
 protected:
 
@@ -40,7 +40,8 @@ public:
 	TArray<TArray<FVector>>& GetCrowdOffsetsMutable() const;
 	TArray<TArray<FVector>>& GetCrowdOffsetsConst() const;
 
-	void SetCrowdFormation(CrowdFormation* InFormation);
+	//void SetCrowdFormation(CrowdFormation* InFormation);
+	void SetCrowdFormation(TSharedPtr<CrowdFormation> InFormation);
 
 	void RequestMovementToGoal(const FVector& GoalLocation);
 	void AbortCrowdMovement(); // todo : am : mb add soft/hard stop

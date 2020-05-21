@@ -23,21 +23,20 @@ private:
 	TMap<int32, Path*> AgentPaths;
 	Crowd* DirectedCrowd = nullptr;
 	
-	// todo : am : try to find way to make shared
-	//TUniquePtr<CrowdMovementRequest> MovementRequest;
-	CrowdMovementRequest* MovementRequest = nullptr;
+	TSharedPtr<CrowdMovementRequest> MovementRequest;
 
 protected:
 
 	void BeginPlay() override;
 public:
-
+	ACrowdDirector();
+	~ACrowdDirector();
 	void SetDirectedCrowd(Crowd* InDirectedCrowd);
 	void Tick(float DeltaTime) override;
 
 	void ProcessCrowdMovementRequest();
 
-	void AddMovementRequest(CrowdMovementRequest* InMovementRequest);
+	void AddMovementRequest(TSharedPtr<CrowdMovementRequest> InMovementRequest);
 	void ProcessCrowdColumnMovementRequest();
 
 	void SetCrowdColumnMovement(const TArray<AAgent*>& CurrentUnprocessedCrowdColumn, const TArray<FVector>& ColumnGoalLocations) const;

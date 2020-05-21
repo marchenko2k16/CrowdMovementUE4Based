@@ -2,14 +2,19 @@
 #include "Crowd/Additional/CrowdFormation.h"
 #include "Crowd/Agent.h"
 
-void CrowdMovementRequest::SetCrowdMovementGoalLocation(const FVector& InGoalLocation)
+void CrowdMovementRequest::SetGoalLocation(const FVector& InGoalLocation)
 {
 	GoalLocation = InGoalLocation;
 }
 
-void CrowdMovementRequest::SetCrowdMovementRequestTimestamp(float Timestamp)
+void CrowdMovementRequest::SetRequestTimestamp(float Timestamp)
 {
 	RequestTimestamp = Timestamp;
+}
+
+void CrowdMovementRequest::SetFormation(TSharedPtr<CrowdFormation> InFormation)
+{
+	Formation = InFormation;
 }
 
 TArray<AAgent*>& CrowdMovementRequest::GetNextUnprocessedFormationColumn() const
@@ -34,5 +39,5 @@ void CrowdMovementRequest::MarkProcessedCurrentFormationColumn()
 
 bool CrowdMovementRequest::HasProcessedRequest() const
 {
-	return Formation->GetOffsetsMutable().Num() >= LastProcessedColumnIndex;
+	return LastProcessedColumnIndex<Formation->GetOffsetsMutable().Num();
 }

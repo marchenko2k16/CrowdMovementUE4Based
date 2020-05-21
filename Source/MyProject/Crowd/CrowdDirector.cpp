@@ -16,8 +16,15 @@ void ACrowdDirector::BeginPlay()
 {
 	Super::BeginPlay();
 	UNavigationSystemV1::NavigationDirtyEvent.AddUObject(this, &ACrowdDirector::OnNavigationUpdate);
+}
+
+ACrowdDirector::ACrowdDirector()
+{
 	PrimaryActorTick.bCanEverTick = true;
 }
+
+ACrowdDirector::~ACrowdDirector()
+{}
 
 void ACrowdDirector::SetDirectedCrowd(Crowd* InDirectedCrowd)
 {
@@ -46,12 +53,12 @@ void ACrowdDirector::ProcessCrowdMovementRequest()
 	else
 	{
 		//MovementRequest.Release();
-		delete MovementRequest;
+		//delete MovementRequest;
 		MovementRequest = nullptr;
 	}
 }
 
-void ACrowdDirector::AddMovementRequest(CrowdMovementRequest* InMovementRequest)
+void ACrowdDirector::AddMovementRequest(TSharedPtr<CrowdMovementRequest> InMovementRequest)
 {
 	// todo : am : 
 	//MovementRequest = MakeUnique<CrowdMovementRequest>(InMovementRequest);
@@ -69,7 +76,7 @@ void ACrowdDirector::ProcessCrowdColumnMovementRequest()
 void ACrowdDirector::SetCrowdColumnMovement(const TArray<AAgent*>& CurrentUnprocessedCrowdColumn,
                                             const TArray<FVector>& ColumnGoalLocations) const
 {
-	for (int32 Index = CurrentUnprocessedCrowdColumn.Num(); Index>=0; Index--)
+	for (int32 Index = CurrentUnprocessedCrowdColumn.Num()-1; Index>=0; Index--)
 	{
 		const auto Agent = CurrentUnprocessedCrowdColumn[Index];
 		const auto AgentLocation = Agent->GetActorLocation();
@@ -153,7 +160,7 @@ void ACrowdDirector::BeginDestroy()
 	Super::BeginDestroy();
 	if (MovementRequest)
 	{
-		delete MovementRequest;
+		//delete MovementRequest;
 		MovementRequest = nullptr;
 	}
 }

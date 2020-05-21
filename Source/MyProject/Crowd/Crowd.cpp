@@ -13,7 +13,7 @@ Crowd::Crowd()
 Crowd::~Crowd()
 {
 	// todo : am : try to find way to make shared
-	delete Formation;
+	//delete Formation;
 }
 
 void Crowd::ReinitCrowdDirector()
@@ -48,7 +48,8 @@ TArray<TArray<FVector>>& Crowd::GetCrowdOffsetsConst() const
 	return Formation->GetOffsetsMutable();
 }
 
-void Crowd::SetCrowdFormation(CrowdFormation* InFormation)
+//void Crowd::SetCrowdFormation(CrowdFormation* InFormation)
+void Crowd::SetCrowdFormation(TSharedPtr<CrowdFormation>  InFormation)
 {
 	Formation = InFormation;
 	//Formation = MakeShared<CrowdFormation>(*InFormation);
@@ -57,13 +58,16 @@ void Crowd::SetCrowdFormation(CrowdFormation* InFormation)
 void Crowd::RequestMovementToGoal(const FVector& GoalLocation)
 {
 	// TODO : AM : make smart pointer
-	CrowdMovementRequest* MovementRequest = new CrowdMovementRequest();
+	
 
 	// todo : am : refactor and find simplier way
 	UWorld* World = Formation->GetAgentPoolMutable()[0][0]->GetWorld();
 
-	MovementRequest->SetCrowdMovementGoalLocation(GoalLocation);
-	MovementRequest->SetCrowdMovementRequestTimestamp(World->GetTimeSeconds());
+	TSharedPtr<CrowdMovementRequest> MovementRequest = MakeShared<CrowdMovementRequest>();
+	MovementRequest->SetGoalLocation(GoalLocation);
+	MovementRequest->SetRequestTimestamp(World->GetTimeSeconds());
+	MovementRequest->SetFormation(Formation);
+	//TUniquePtr<CrowdMovementRequest> MovementRequest = );
 	CrowdDirector->AddMovementRequest(MovementRequest);
 }
 

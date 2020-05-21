@@ -13,7 +13,8 @@ void RectangularCrowdFormation::GenerateAgentColumnsLocations(FVector CrowdCente
 {
 	// todo : am : fix hardcoded
 	Offsets.Emplace(TArray<FVector>());
-	Offsets[0].Emplace(CrowdCenter - FVector{0,0,200});
+	//Offsets[0].Emplace(CrowdCenter - FVector{0,0,200});
+	Offsets[0].Emplace(FVector{100,100,200});
 
 	const float Offset = 100.f;
 	FVector::ForwardVector;

@@ -18,10 +18,10 @@ void AAgentSpawner::SpawnCrowd()
 	const FVector SpawnCenter = GetActorLocation();
 
 	// todo : am : make fabric
-	CrowdFormation* Formation = nullptr;
+	TSharedPtr<CrowdFormation> Formation = nullptr;
 	if (FormationType==EFormationType::Rectangular)
 	{
-		Formation = new RectangularCrowdFormation(SpawnCenter);
+		Formation = MakeShared<RectangularCrowdFormation>(SpawnCenter);
 	}
 
 	// todo : am : clean it !!!
