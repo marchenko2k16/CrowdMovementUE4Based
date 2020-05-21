@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CoreMinimal.h"
+#include "ObjectMacros.h"
 
 //#include "Private/PostProcess/PostProcessGBufferHints.h"
 
@@ -32,6 +32,7 @@ enum class EMovementRequestType : uint8
 	BFSAStar
 };
 
+UENUM()
 enum class EFormationType : uint8
 {
 	Circular,

@@ -7,7 +7,7 @@ class AAgent;
 // TODO : AM : Decide to return FVector either by ref or by value
 class CrowdFormation
 {
-private:
+protected:
 	friend class AAgentSpawner;
 
 	TArray<TArray<FVector>> Offsets;
@@ -26,5 +26,5 @@ public:
 	FVector GetCenter() const;
 	int32 GetCount() const;
 
-	virtual void GenerateAgentColumnsLocations(FVector CrowdCenter, int32 CrowdMembersCount) = 0;
+	virtual void GenerateAgentColumnsLocations(FVector CrowdCenter, int32 CrowdMembersCount);
 };

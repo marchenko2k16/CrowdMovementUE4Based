@@ -1,18 +1,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+
+#include "Additional/CrowdFormation.h"
+#include "Crowd/CrowdDirector.h"
+
+// ue4
 #include "StrongObjectPtr.h"
 
 class AAgent;
-class ACrowdDirector;
-class CrowdFormation;
 
-class Path;
+//class ACrowdDirector;
+//class CrowdFormation;
+
+struct Path;
 
 class Crowd
 {
 private:
-	TSharedPtr<CrowdFormation> Formation = nullptr;
+	// todo : am : try to find way to make shared
+	//TSharedPtr<CrowdFormation> Formation = nullptr;
+	CrowdFormation* Formation = nullptr;
 	
 protected:
 

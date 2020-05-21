@@ -1,27 +1,18 @@
-#include "Crowd.h"
-#include "Agent.h"
+#include "Crowd/Crowd.h"
+#include "Crowd/Agent.h"
 
-#include "AgentSpawner.h"
-
-#include "Algo/Path.h"
-#include "Algo/GraphNode.h"
-
-#include "CrowdDirector.h"
-
-#include "Algo/AStarSolver.h"
-#include "Algo/GridGenerator.h"
-
-#include "MyProjectGameMode.h"
-
-#include "Crowd/Additional/CrowdFormation.h"
 #include "Crowd/Additional/CrowdMovementRequest.h"
-#include "AITestSuite/Public/AITestsCommon.h"
+#include "Crowd/AgentSpawner.h"
+
+// ue4
+#include "Engine/World.h"
 
 Crowd::Crowd()
 {}
 
 Crowd::~Crowd()
 {
+	// todo : am : try to find way to make shared
 	delete Formation;
 }
 
@@ -59,20 +50,16 @@ TArray<TArray<FVector>>& Crowd::GetCrowdOffsetsConst() const
 
 void Crowd::SetCrowdFormation(CrowdFormation* InFormation)
 {
-	Formation = MakeShared<CrowdFormation>(InFormation);
+	Formation = InFormation;
+	//Formation = MakeShared<CrowdFormation>(*InFormation);
 }
 
 void Crowd::RequestMovementToGoal(const FVector& GoalLocation)
 {
 	CrowdMovementRequest* MovementRequest = nullptr;
 
-	// todo : am : refactor 
-	const auto AIHelperWorld = FAITestHelpers::GetWorld();
-	const auto World = Formation->GetAgentPoolMutable()[0][0]->GetWorld();
-	if (AIHelperWorld==World)
-	{
-		int j = 134;
-	}
+	// todo : am : refactor and find simplier way
+	UWorld* World = Formation->GetAgentPoolMutable()[0][0]->GetWorld();
 
 	MovementRequest->SetCrowdMovementGoalLocation(GoalLocation);
 	MovementRequest->SetCrowdMovementRequestTimestamp(World->GetTimeSeconds());

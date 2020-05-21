@@ -6,6 +6,7 @@ class AAgent;
 
 class  RectangularCrowdFormation : public CrowdFormation
 {
+public:
 	// todo : am : finilize
 	RectangularCrowdFormation(FVector CrowdCenter, int32 CrowdMembersCount = 100);
 	virtual ~RectangularCrowdFormation();

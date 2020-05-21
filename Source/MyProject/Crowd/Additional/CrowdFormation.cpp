@@ -34,3 +34,8 @@ int32 CrowdFormation::GetCount() const
 {
 	return MembersCount;
 }
+
+void CrowdFormation::GenerateAgentColumnsLocations(FVector CrowdCenter, int32 CrowdMembersCount)
+{
+	ensure("should never be called");
+}

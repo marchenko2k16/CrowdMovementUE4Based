@@ -1,9 +1,10 @@
 #pragma once
 
 #include "Agent.h"
-#include "AgentSpawner.generated.h"
 
 #include "Misc/Enumerators.h"
+
+#include "AgentSpawner.generated.h"
 
 class ACrowd;
 class ACrowdDirector;
@@ -18,8 +19,8 @@ private:
 	TSubclassOf<AAgent> Agent;
 
 protected:
-	UPROPERTY(EditAnywhere)
-	int32 SpawnCount = 1;
+	//UPROPERTY(EditAnywhere)
+	//int32 SpawnCount = 1;
 	
 	UPROPERTY(EditAnywhere)
 	EFormationType FormationType = EFormationType::Rectangular;

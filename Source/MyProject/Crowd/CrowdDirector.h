@@ -1,9 +1,8 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
-#include "NavigationSystem.h"
 
-#include "Queue.h"
+#include "Crowd/Additional/CrowdMovementRequest.h"
 
 #include "CrowdDirector.generated.h"
 
@@ -14,21 +13,19 @@ class Crowd;
 struct Path;
 
 
-class CrowdMovementRequest;
+//class CrowdMovementRequest;
 UCLASS()
 	class ACrowdDirector : public AActor
 {
 	GENERATED_BODY()
 
 private:
-
-	//UPROPERTY()
 	TMap<int32, Path*> AgentPaths;
-	//std::map<int32, Path*> AgentPaths;
-
 	Crowd* DirectedCrowd = nullptr;
-
-	TUniquePtr<CrowdMovementRequest> MovementRequest;
+	
+	// todo : am : try to find way to make shared
+	//TUniquePtr<CrowdMovementRequest> MovementRequest;
+	CrowdMovementRequest* MovementRequest = nullptr;
 
 protected:
 

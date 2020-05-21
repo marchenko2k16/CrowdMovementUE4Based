@@ -1,6 +1,5 @@
 #include "Crowd/CrowdDirector.h"
 #include "Crowd/Agent.h"
-#include "Crowd/Additional/CrowdMovementRequest.h"
 
 #include "Algo/AStarSolver.h"
 #include "Algo/GraphNode.h"
@@ -9,6 +8,9 @@
 #include "Algo/Path.h"
 
 #include "MyProjectGameMode.h"
+
+// UE4
+#include "NavigationSystem.h"
 
 void ACrowdDirector::BeginPlay()
 {
@@ -29,7 +31,8 @@ void ACrowdDirector::Tick(float DeltaTime)
 
 void ACrowdDirector::ProcessCrowdMovementRequest()
 {
-	if (!MovementRequest.IsValid())
+	//if (!MovementRequest.IsValid())
+	if (!MovementRequest)
 	{
 		return;
 	}
@@ -41,13 +44,17 @@ void ACrowdDirector::ProcessCrowdMovementRequest()
 	}
 	else
 	{
-		MovementRequest.Release();
+		//MovementRequest.Release();
+		delete MovementRequest;
+		MovementRequest = nullptr;
 	}
 }
 
 void ACrowdDirector::AddMovementRequest(CrowdMovementRequest* InMovementRequest)
 {
-	MovementRequest = MakeUnique<CrowdMovementRequest>(InMovementRequest);
+	// todo : am : 
+	//MovementRequest = MakeUnique<CrowdMovementRequest>(InMovementRequest);
+	MovementRequest = InMovementRequest;
 }
 
 void ACrowdDirector::ProcessCrowdColumnMovementRequest()
@@ -143,4 +150,9 @@ void ACrowdDirector::UpdateSerializedPathes()
 void ACrowdDirector::BeginDestroy()
 {
 	Super::BeginDestroy();
+	if (MovementRequest)
+	{
+		delete MovementRequest;
+		MovementRequest = nullptr;
+	}
 }

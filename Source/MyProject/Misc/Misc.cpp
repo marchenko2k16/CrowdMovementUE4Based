@@ -16,7 +16,7 @@ TArray<FVector> Misc::GetCrowdGoalPositions(const FVector& CrowdGoalPosition, co
 	//	GoalLocations.Emplace(CrowdGoalPosition + AgentOffset);
 	//}
 	//
-	//return GoalLocations;
+	return GoalLocations;
 }
 
 void Misc::SetCrowdMovementToPosition(const FVector& CrowdGoalPosition, Crowd* Crowd)

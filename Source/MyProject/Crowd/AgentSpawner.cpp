@@ -45,7 +45,7 @@ AAgent* AAgentSpawner::SpawnAgents(const FVector& SpawnLocation, const FRotator&
 	if (!Agent)
 	{
 		ensure("No Agent Set");
-		return;
+		return nullptr;
 	}
 	UWorld* GameWorld = GetWorld();
 	if (!GameWorld)

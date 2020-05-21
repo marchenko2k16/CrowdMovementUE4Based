@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Paths.h"
 #include "GameFramework/Character.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Agent.generated.h"
