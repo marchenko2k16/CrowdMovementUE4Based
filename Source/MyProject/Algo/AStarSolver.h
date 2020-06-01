@@ -20,9 +20,10 @@ private:
 	TArray<GraphNode*> ClosedNodes;
 
 	GraphNode* GetLowestFCostNode(const TArray<GraphNode*>& InOpenNodes) const;
-	TArray<GraphNode*> UnpackBuildPath(GraphNode* LastPathNode, const AAgent* Agent) const;
-	void DrawStartAndGoal(const AAgent* Agent, const GraphNode* EndNode, GraphNode* StartNode);
-	void DrawBuiltPath(TArray<GraphNode*>& ResultPath, const AAgent* Agent) const;
+	TArray<GraphNode*> UnpackBuildPath(GraphNode* LastPathNode, const UWorld* World) const;
+	void DrawStartAndGoal(const GraphNode* EndNode, GraphNode* StartNode, const UWorld* World);
+	void DrawBuiltPath(TArray<GraphNode*>& ResultPath, const UWorld* World) const;
+	void DrawOpenedClosedNodes(const UWorld* World) const;
 
 public:
 	TTuple<ESearchResult, Path*> FindPath(Grid* Grid, GraphNode* StartNode, const GraphNode* EndNode, const AAgent* Agent);

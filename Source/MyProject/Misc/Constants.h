@@ -5,8 +5,9 @@
 
 namespace Constants
 {
-	const FVector ZOffset{0.f, 0.f, -150.f};
-	const float GridStep = 86.f;
+	const FVector DebugVectorZOffset{0.f, 0.f, 200.f};
+	const float GridStep = 100.f;
 	const float HalfGridStep = GridStep / 2.f;
-
+	const float BaseStepCost = 1.f;
+	const float NonTraversableNeighborIncreasingCost = 5.f;
 }

@@ -24,7 +24,7 @@ private:
 	Crowd* DirectedCrowd = nullptr;
 	
 	TSharedPtr<CrowdMovementRequest> MovementRequest;
-
+	float LastRequestProcessedTimestamp = 0.f;
 protected:
 
 	void BeginPlay() override;

@@ -19,8 +19,8 @@ private:
 	TSubclassOf<AAgent> Agent;
 
 protected:
-	//UPROPERTY(EditAnywhere)
-	//int32 SpawnCount = 1;
+	UPROPERTY(EditAnywhere)
+	int32 SpawnCount = 1;
 	
 	UPROPERTY(EditAnywhere)
 	EFormationType FormationType = EFormationType::Rectangular;
@@ -33,7 +33,7 @@ public:
 	UFUNCTION(CallInEditor)
 	void SpawnCrowd();
 
-	AAgent* SpawnAgents(const FVector& SpawnLocation = FVector::ZeroVector, const FRotator& SpawnRotation = FRotator::ZeroRotator);
+	AAgent* SpawnAgent(const FVector& SpawnLocation = FVector::ZeroVector, const FRotator& SpawnRotation = FRotator::ZeroRotator);
 
 	static ACrowdDirector* SpawnCrowdDirector(UWorld* GameWorld);
 };

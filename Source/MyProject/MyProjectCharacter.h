@@ -62,6 +62,11 @@ protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void MoveCrowdToPlayer();
+	bool EnsureGridExists();
+	FVector GetPositionAheadPlayer();
+	void ToggleDebugPath();
+	void ToggleDebugGoalPositions();
+	void ToggleDebugOpenClosed();
 	// End of APawn interface
 
 public:

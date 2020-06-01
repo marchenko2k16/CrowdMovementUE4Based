@@ -47,13 +47,21 @@ void ACrowdDirector::ProcessCrowdMovementRequest()
 
 	if (MovementRequest->HasProcessedRequest())
 	{
+		//constexpr float TimeToPassSec = 1.7f;
+		constexpr float TimeToPassSec = 1.5f;
+		const float CurrentTime = GetWorld()->GetRealTimeSeconds();
+		if (LastRequestProcessedTimestamp>=CurrentTime-TimeToPassSec )
+		{
+			return;
+		}
+		LastRequestProcessedTimestamp = CurrentTime;
+
 		ProcessCrowdColumnMovementRequest();
-		MovementRequest->MarkProcessedCurrentFormationColumn();
+		MovementRequest->MarkProcessedCurrentFormationRow();
 	}
 	else
 	{
-		//MovementRequest.Release();
-		//delete MovementRequest;
+		MovementRequest.Reset();
 		MovementRequest = nullptr;
 	}
 }
@@ -67,7 +75,7 @@ void ACrowdDirector::AddMovementRequest(TSharedPtr<CrowdMovementRequest> InMovem
 
 void ACrowdDirector::ProcessCrowdColumnMovementRequest()
 {
-	const auto CurrentUnprocessedCrowdColumn = MovementRequest->GetNextUnprocessedFormationColumn();
+	const auto CurrentUnprocessedCrowdColumn = MovementRequest->GetNextUnprocessedFormationRow();
 	const auto ColumnGoalLocations = MovementRequest->GetNextUnprocessedLocations();
 
 	SetCrowdColumnMovement(CurrentUnprocessedCrowdColumn, ColumnGoalLocations);
@@ -160,7 +168,7 @@ void ACrowdDirector::BeginDestroy()
 	Super::BeginDestroy();
 	if (MovementRequest)
 	{
-		//delete MovementRequest;
+		MovementRequest.Reset();
 		MovementRequest = nullptr;
 	}
 }

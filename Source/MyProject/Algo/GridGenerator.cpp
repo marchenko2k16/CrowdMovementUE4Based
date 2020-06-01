@@ -15,20 +15,26 @@
 void AGridGenerator::BeginPlay()
 {
 	AMyProjectGameMode::SetGridGenerator(this);
+	GenerateGrid();
+	RedrawGrid();
 }
 
 void AGridGenerator::BeginDestroy()
 {
 	Super::BeginDestroy();
 
-	if(GlobalGridData)
+	if (GlobalGridData)
 	{
-		delete GlobalGridData;	
+		delete GlobalGridData;
 	}
 }
 
 void AGridGenerator::GenerateGrid()
 {
+	if (GlobalGridData)
+	{
+		return;
+	}
 	Grid* GeneratedGrid = new Grid();
 
 	const FVector NavMeshCenter = AMyProjectGameMode::GetNavMeshEssentialsInstance()->GetNavMeshCenter();
@@ -57,7 +63,7 @@ void AGridGenerator::GenerateGrid()
 
 	int32 GridRow = 0;
 
-	TPair<int32,int32> NodeIndex {0,0};
+	TPair<int32, int32> NodeIndex{0, 0};
 	for (float CurrentX = XMin; CurrentX<XMax; CurrentX += Constants::GridStep,GridRow++)
 	{
 		Nodes.Emplace(TArray<GraphNode*>());
@@ -65,7 +71,7 @@ void AGridGenerator::GenerateGrid()
 		{
 			GraphNode* Node = new GraphNode();
 			Node->SetGridPtr(GeneratedGrid);
-			Node->SetStepCost(1.f);
+			Node->SetStepCost(Constants::BaseStepCost);
 			Node->SetIndex(NodeIndex);
 
 			FVector CurrentPresumableGraphPoint{CurrentX+Constants::HalfGridStep, CurrentY+Constants::HalfGridStep, NavMeshCenter.Z};
@@ -84,11 +90,13 @@ void AGridGenerator::GenerateGrid()
 			Nodes[GridRow].Emplace(Node);
 			NodeIndex.Value++;
 		}
-		NodeIndex.Value=0;
+		NodeIndex.Value = 0;
 		NodeIndex.Key++;
 	}
 	GeneratedGrid->SetGraph(Nodes);
 	GeneratedGrid->SetGridCenter(NavMeshCenter);
+
+	GeneratedGrid->ModifyBaseWeights();
 
 	GlobalGridData = GeneratedGrid;
 }
@@ -101,7 +109,7 @@ void AGridGenerator::RedrawGrid()
 	{
 		return;
 	}
-	
+
 	if (!GlobalGridData)
 	{
 		return;
@@ -115,11 +123,13 @@ void AGridGenerator::RedrawGrid()
 		{
 			if (Node->IsTraversable())
 			{
-				DrawDebugLine(GameWorld, Node->GetLocation()+Constants::ZOffset, Node->GetLocation()-Constants::ZOffset, FColor::Green, false, 3.f, 0, 20);
+				DrawDebugLine(GameWorld, Node->GetLocation()+Constants::DebugVectorZOffset,
+				              Node->GetLocation()-Constants::DebugVectorZOffset, FColor::Green, false, 3.f, 0, 20);
 			}
 			else
 			{
-				DrawDebugLine(GameWorld, Node->GetLocation()+Constants::ZOffset, Node->GetLocation()-Constants::ZOffset, FColor::Red, false, 3.f, 0, 20);
+				DrawDebugLine(GameWorld, Node->GetLocation()+Constants::DebugVectorZOffset,
+				              Node->GetLocation()-Constants::DebugVectorZOffset, FColor::Red, false, 3.f, 0, 20);
 			}
 		}
 	}
@@ -164,20 +174,21 @@ void AGridGenerator::ModifyWalkableAreaOnRuntime(Grid* GridData)
 
 GraphNode* AGridGenerator::GetGraphNodeByLocation(const FVector& RealWordLocation) const
 {
-	const float GridStep = 86.f;
+	const int32 GridHeight = GlobalGridData->GetNodePoolConst().Num();
+	const int32 GridWidth = GlobalGridData->GetNodePoolConst().Last().Num();
 
-	const int32 GridFieldSize = GlobalGridData->GetNodePoolConst().Num();
-	const int32 HalfGridSize = GridFieldSize/2;
+	const int32 HalfGridHeight = GridHeight/2;
+	const int32 HalfGridWidth = GridWidth/2;
 
-	const FVector GridCellRowColumnValues = (RealWordLocation-GlobalGridData->GetGridCenter())/GridStep;
+	const FVector GridCellRowColumnValues = (RealWordLocation-GlobalGridData->GetGridCenter())/Constants::GridStep;
 
 	const int8 XAdditionalOffset = GridCellRowColumnValues.X>0 ? 0 : -1;
 	const int8 YAdditionalOffset = GridCellRowColumnValues.Y>0 ? 0 : -1;
 
-	const int32 RealToRowX = GridCellRowColumnValues.X+HalfGridSize+XAdditionalOffset;
-	const int32 RealToRowY = GridCellRowColumnValues.Y+HalfGridSize+YAdditionalOffset;
+	const int32 RealToRowX = GridCellRowColumnValues.X+HalfGridHeight+XAdditionalOffset;
+	const int32 RealToRowY = GridCellRowColumnValues.Y+HalfGridWidth+YAdditionalOffset;
 
-	if (RealToRowX<0||RealToRowX>=GridFieldSize||RealToRowY<0||RealToRowY>=GridFieldSize)
+	if (RealToRowX<0||RealToRowX>=GridHeight||RealToRowY<0||RealToRowY>=GridWidth)
 	{
 		return nullptr;
 	}

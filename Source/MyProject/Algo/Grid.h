@@ -9,6 +9,9 @@ class GraphNode;
 
 class Grid : public Graph
 {
+
+private:
+	TArray<TArray<int32>> SerializedNodeWeights;
 public:
 
 	Grid() = default;
@@ -27,6 +30,8 @@ public:
 	FVector GetGridCenter() const override;
 
 	TArray<GraphNode*> GetNodeNeighbors(const GraphNode* InNode) override;
+	
+	void ModifyBaseWeights();
 
 	void ResetCalculations();
 };

@@ -18,7 +18,8 @@
 
 TTuple<ESearchResult, Path*> AStarSolver::FindPath(Grid* Grid, GraphNode* StartNode, const GraphNode* EndNode, const AAgent* Agent)
 {
-	DrawStartAndGoal(Agent, EndNode, StartNode);
+	const auto GameWorld = Agent->GetWorld();
+	DrawStartAndGoal(EndNode, StartNode, GameWorld);
 
 	OpenNodes.Reset();
 	ClosedNodes.Reset();
@@ -48,13 +49,17 @@ TTuple<ESearchResult, Path*> AStarSolver::FindPath(Grid* Grid, GraphNode* StartN
 			{
 				continue;
 			}
-			const float_t NewGCost = CurrentNode->GetGCost()+CurrentNeighbor->GetStepCost();
-			const float_t NewHCost = Misc::EuclidHeuristics(CurrentNeighbor->GetLocation(), EndNode->GetLocation());
-			const float_t NewFCost = NewGCost+NewHCost;
 
-			const bool IsNeighborAlreadyOpened = OpenNodes.Contains(CurrentNeighbor);
+			//const float DistanceBetweenNodes = Misc::EuclidHeuristics(CurrentNeighbor->GetLocation(), CurrentNode->GetLocation());
+			const float DistanceBetweenNodes = Misc::ManhattanHeuristics(CurrentNeighbor->GetLocation(), CurrentNode->GetLocation());
+			const float NewGCost = CurrentNode->GetGCost() + CurrentNeighbor->GetStepCost() + DistanceBetweenNodes;
+			//const float NewHCost = Misc::EuclidHeuristics(CurrentNeighbor->GetLocation(), EndNode->GetLocation());
+			const float NewHCost = Misc::ManhattanHeuristics(CurrentNeighbor->GetLocation(), EndNode->GetLocation());
+			const float NewFCost = NewGCost+NewHCost;
 
-			if (!IsNeighborAlreadyOpened||CurrentNeighbor->GetFCost()<NewFCost)
+			const bool IsNeighborAlreadyOpened = OpenNodes.Contains(CurrentNeighbor);//||ClosedNodes.Contains(CurrentNeighbor);
+
+			if (!IsNeighborAlreadyOpened||NewFCost<CurrentNeighbor->GetFCost())
 			{
 				CurrentNeighbor->SetParentNode(CurrentNode);
 				CurrentNeighbor->SetGCost(NewGCost);
@@ -68,7 +73,12 @@ TTuple<ESearchResult, Path*> AStarSolver::FindPath(Grid* Grid, GraphNode* StartN
 		}
 	}
 
-	const TArray<GraphNode*> PathPoints = UnpackBuildPath(CurrentNode, Agent);
+	if (ConsoleManager::bVisualDebugOpenClosed)
+	{
+		DrawOpenedClosedNodes(GameWorld);	
+	}
+
+	const TArray<GraphNode*> PathPoints = UnpackBuildPath(CurrentNode, GameWorld);
 	Path* GeneratedPath = new Path();
 
 	GeneratedPath->PathGraphNodes = PathPoints;
@@ -79,7 +89,6 @@ TTuple<ESearchResult, Path*> AStarSolver::FindPath(Grid* Grid, GraphNode* StartN
 GraphNode* AStarSolver::GetLowestFCostNode(const TArray<GraphNode*>& InOpenNodes) const
 {
 	const int32 OpenNodesCount = InOpenNodes.Num();
-	float MinCost = 0.f;
 	int32 MinNodeIndex = 0;
 
 	for (int32 Index = MinNodeIndex+1; Index<OpenNodesCount; Index++)
@@ -92,7 +101,7 @@ GraphNode* AStarSolver::GetLowestFCostNode(const TArray<GraphNode*>& InOpenNodes
 	return InOpenNodes[MinNodeIndex];
 }
 
-TArray<GraphNode*> AStarSolver::UnpackBuildPath(GraphNode* LastPathNode, const AAgent* Agent) const
+TArray<GraphNode*> AStarSolver::UnpackBuildPath(GraphNode* LastPathNode, const UWorld* World) const
 {
 	TArray<GraphNode*> ResultPath;
 	GraphNode* CurrentNode = LastPathNode;
@@ -101,30 +110,50 @@ TArray<GraphNode*> AStarSolver::UnpackBuildPath(GraphNode* LastPathNode, const A
 		ResultPath.EmplaceAt(0, CurrentNode);
 		CurrentNode = CurrentNode->GetParentNode();
 	}
-
-	DrawBuiltPath(ResultPath, Agent);
+	ResultPath.RemoveSingleSwap(CurrentNode, false);
+	DrawBuiltPath(ResultPath, World);
 	return ResultPath;
 }
 
-void AStarSolver::DrawStartAndGoal(const AAgent* Agent, const GraphNode* EndNode, GraphNode* StartNode)
+void AStarSolver::DrawStartAndGoal(const GraphNode* EndNode, GraphNode* StartNode, const UWorld* World)
 {
 	if (ConsoleManager::bVisualDebugGoalPositions)
 	{
-		DrawDebugLine(Agent->GetWorld(), EndNode->GetLocation()+Constants::ZOffset*2, EndNode->GetLocation()-Constants::ZOffset,
+		DrawDebugLine(World, EndNode->GetLocation()+Constants::DebugVectorZOffset*2,
+		              EndNode->GetLocation()-Constants::DebugVectorZOffset,
 		              FColor::White, true, 30.f, 0, 20);
-		DrawDebugLine(Agent->GetWorld(), StartNode->GetLocation()+Constants::ZOffset*2, StartNode->GetLocation()-Constants::ZOffset,
+		DrawDebugLine(World, StartNode->GetLocation()+Constants::DebugVectorZOffset*2,
+		              StartNode->GetLocation()-Constants::DebugVectorZOffset,
 		              FColor::White, true, 30.f, 0, 20);
 	}
 }
 
-void AStarSolver::DrawBuiltPath(TArray<GraphNode*>& ResultPath, const AAgent* Agent) const
+void AStarSolver::DrawBuiltPath(TArray<GraphNode*>& ResultPath, const UWorld* World) const
 {
 	if (ConsoleManager::bVisualDebugPath)
 	{
 		for (const auto& Node : ResultPath)
 		{
-			DrawDebugLine(Agent->GetWorld(), Node->GetLocation()+Constants::ZOffset, Node->GetLocation()-Constants::ZOffset,
+			DrawDebugLine(World, Node->GetLocation()+Constants::DebugVectorZOffset,
+			              Node->GetLocation()-Constants::DebugVectorZOffset,
 			              FColor::Orange, false, 30.f, 0, 20);
 		}
+	}
+}
+
+void AStarSolver::DrawOpenedClosedNodes(const UWorld* World) const
+{
+	for (const auto& Open : OpenNodes)
+	{
+		DrawDebugLine(World, Open->GetLocation()+Constants::DebugVectorZOffset,
+			              Open->GetLocation()-Constants::DebugVectorZOffset,
+			              FColor::Green, false, 30.f, 0, 20);
+	}
+
+	for (const auto& Closed : ClosedNodes)
+	{
+		DrawDebugLine(World, Closed->GetLocation()+Constants::DebugVectorZOffset,
+			              Closed->GetLocation()-Constants::DebugVectorZOffset,
+			              FColor::Red, false, 30.f, 0, 20);
 	}
 }

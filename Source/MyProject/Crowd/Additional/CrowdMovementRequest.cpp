@@ -17,14 +17,14 @@ void CrowdMovementRequest::SetFormation(TSharedPtr<CrowdFormation> InFormation)
 	Formation = InFormation;
 }
 
-TArray<AAgent*>& CrowdMovementRequest::GetNextUnprocessedFormationColumn() const
+TArray<AAgent*>& CrowdMovementRequest::GetNextUnprocessedFormationRow() const
 {
-	return Formation->GetAgentPoolMutable()[LastProcessedColumnIndex];
+	return Formation->GetAgentPoolMutable()[LastProcessedRowIndex];
 }
 
 TArray<FVector>& CrowdMovementRequest::GetNextUnprocessedLocations() const
 {
-	return Formation->GetOffsetsMutable()[LastProcessedColumnIndex];
+	return Formation->GetOffsetsMutable()[LastProcessedRowIndex];
 }
 
 FVector CrowdMovementRequest::GetGoalLocation() const
@@ -32,12 +32,12 @@ FVector CrowdMovementRequest::GetGoalLocation() const
 	return GoalLocation;
 }
 
-void CrowdMovementRequest::MarkProcessedCurrentFormationColumn()
+void CrowdMovementRequest::MarkProcessedCurrentFormationRow()
 {
-	LastProcessedColumnIndex++;
+	LastProcessedRowIndex++;
 }
 
 bool CrowdMovementRequest::HasProcessedRequest() const
 {
-	return LastProcessedColumnIndex<Formation->GetOffsetsMutable().Num();
+	return LastProcessedRowIndex<Formation->GetOffsetsMutable().Num();
 }

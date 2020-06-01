@@ -32,7 +32,7 @@ public:
 	Crowd();
 	~Crowd();
 
-	void ReinitCrowdDirector();
+	void ReinitializeCrowdDirector();
 
 	TArray<TArray<AAgent*>>& GetAgentPoolMutable();
 	TArray<TArray<AAgent*>>& GetAgentPoolConst() const;

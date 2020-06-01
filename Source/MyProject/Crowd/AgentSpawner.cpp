@@ -5,45 +5,44 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "Misc/NavMeshInfo.h"
-#include "MyProjectGameMode.h"
+#include "Misc/Constants.h"
 
+#include "MyProjectGameMode.h"
 #include "Crowd/Crowd.h"
+
 #include "Crowd/CrowdDirector.h"
 #include "Additional/RectangularCrowdFormation.h"
 
 void AAgentSpawner::SpawnCrowd()
 {
-	const auto CurrentProjectGameMode = Cast<AMyProjectGameMode>(UGameplayStatics::GetGameMode(this));
-
-	const FVector SpawnCenter = GetActorLocation();
+	const FVector SpawnCenter = GetActorLocation()-Constants::DebugVectorZOffset;
 
 	// todo : am : make fabric
 	TSharedPtr<CrowdFormation> Formation = nullptr;
 	if (FormationType==EFormationType::Rectangular)
 	{
-		Formation = MakeShared<RectangularCrowdFormation>(SpawnCenter);
+		Formation = MakeShared<RectangularCrowdFormation>(SpawnCenter, SpawnCount);
 	}
 
 	// todo : am : clean it !!!
 	//Formation->AgentPool.Reserve(Formation->Offsets.Num());
 	//Formation->AgentPool.SetNumUninitialized(Formation->Offsets.Num());
-	Formation->AgentPool.Emplace(TArray<AAgent*>());
 	for (int32 ColumnIndex = 0; ColumnIndex<Formation->GetOffsetsMutable().Num(); ColumnIndex++)
 	{
 		//Formation->AgentPool.Reserve(Formation->Offsets[ColumnIndex].Num());
 		//Formation->AgentPool.SetNumUninitialized(Formation->Offsets[ColumnIndex].Num());
-
+		Formation->AgentPool.Emplace(TArray<AAgent*>());
 		for (const auto& CurrentOffset : Formation->Offsets[ColumnIndex])
 		{
-			Formation->AgentPool[ColumnIndex].Emplace(SpawnAgents(SpawnCenter+CurrentOffset));
+			Formation->AgentPool[ColumnIndex].Emplace(SpawnAgent(SpawnCenter+CurrentOffset));
 		}
 	}
 
 	AMyProjectGameMode::GetCrowd()->SetCrowdFormation(Formation);
-	AMyProjectGameMode::GetCrowd()->ReinitCrowdDirector();
+	AMyProjectGameMode::GetCrowd()->ReinitializeCrowdDirector();
 }
 
-AAgent* AAgentSpawner::SpawnAgents(const FVector& SpawnLocation, const FRotator& SpawnRotation)
+AAgent* AAgentSpawner::SpawnAgent(const FVector& SpawnLocation, const FRotator& SpawnRotation)
 {
 	if (!Agent)
 	{

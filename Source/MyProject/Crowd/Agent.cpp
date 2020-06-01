@@ -8,23 +8,11 @@
 #include "AIController.h"
 #include "NavigationSystem.h"
 #include "DrawDebugHelpers.h"
+#include "Misc/Constants.h"
 
 AAgent::AAgent()
 {
-	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-
-	// Don't rotate when the controller rotates. Let that just affect the camera.
-	//bUseControllerRotationPitch = false;
-	//bUseControllerRotationYaw = false;
-	//bUseControllerRotationRoll = false;
-	//
-	//// Configure character movement
-	//GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	//GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
-	//GetCharacterMovement()->JumpZVelocity = 600.f;
-	//GetCharacterMovement()->AirControl = 0.2f;
-
 	GetCharacterMovement()->MaxAcceleration = 100000.f;
 }
 
@@ -41,7 +29,8 @@ void AAgent::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	constexpr float TimeToPassSec = 0.5f;
-	if (bMovementInterrupter&&MovementInterruptionTime<=GetWorld()->GetTimeSeconds()-TimeToPassSec)
+	const float CurrentTime = GetWorld()->GetTimeSeconds();
+	if (bMovementInterrupter&&MovementInterruptionTime<=CurrentTime-TimeToPassSec)
 	{
 		const auto Node = CurrentPath->GetNextGraphNodeSafe();
 		if (!Node)
@@ -81,13 +70,19 @@ void AAgent::MoveToLocation(const FVector& GoalLocation)
 	{
 		return;
 	}
-	// Add some check lvl
-	const auto AcceptanceRadius = 5.f;
-	auto Result = AIController->MoveToLocation(GoalLocation, AcceptanceRadius, false, true, true, true);//, NavFilterSubClass);
+	
+	constexpr float AcceptanceRadius = Constants::GridStep;
 
-	//DrawDebugLine(GetWorld(), GoalLocation+Constants::ZOffset, GoalLocation-ZOffset, FColor::Black, true, 3.f, 0, 20);		
+	if (!AIController->ReceiveMoveCompleted.IsBound())
+	{
+		AIController->ReceiveMoveCompleted.AddDynamic(this, &AAgent::OnMoveCompleted);
+	}
 
-	AIController->ReceiveMoveCompleted.AddDynamic(this, &AAgent::OnMoveCompleted);
+	const EPathFollowingRequestResult::Type Result = AIController->MoveToLocation(GoalLocation, AcceptanceRadius, false);
+	if (Result!=EPathFollowingRequestResult::RequestSuccessful)
+	{
+		int32 Debug = 0;
+	}
 }
 
 // todo : customize
@@ -108,20 +103,18 @@ void AAgent::OnMoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type 
 		return;
 	}
 
-	if (MovementResult!=EPathFollowingResult::Success)
-	{
-		MovementInterruptionTime = GetWorld()->GetRealTimeSeconds();
-		bMovementInterrupter = true;
-		AIController->ReceiveMoveCompleted.Clear();
-		return;
-	}
-
-	bMovementInterrupter = false;
-	AIController->ReceiveMoveCompleted.Clear();
-
+	//if (MovementResult!=EPathFollowingResult::Success)
+	//{
+	//	MovementInterruptionTime = GetWorld()->GetTimeSeconds();
+	//	bMovementInterrupter = true;
+	//	return;
+	//}
+	//
+	//bMovementInterrupter = false;
 	const auto NextGraphNode = CurrentPath->GetNextGraphNode();
 	if (!NextGraphNode)
 	{
+		AIController->ReceiveMoveCompleted.Clear();
 		return;
 	}
 	const auto NextMovementLocation = NextGraphNode->GetLocation();

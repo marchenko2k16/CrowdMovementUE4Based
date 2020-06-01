@@ -17,10 +17,14 @@ class AMyProjectGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 private:
-	
 	static NavMeshEssentials* NavMeshEssentialsInstance;
 	static Crowd* TesMapCrowd;
 	static AGridGenerator* GridGenerator;
+
+	static UWorld* GameWorld;
+
+protected:
+	void BeginPlay() override;
 
 public:
 	AMyProjectGameMode();
@@ -28,7 +32,7 @@ public:
 	
 	static NavMeshEssentials* GetNavMeshEssentialsInstance();
 	static Crowd* GetCrowd();
-	//UWorld* GetGameWorld();
+	static UWorld* GetGameWorld();
 	
 	static void SetGridGenerator(AGridGenerator* InGridGenerator);
 	static AGridGenerator* GetGridGenerator();

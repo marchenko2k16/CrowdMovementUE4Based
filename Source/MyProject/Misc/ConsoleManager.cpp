@@ -2,6 +2,7 @@
 
 bool ConsoleManager::bVisualDebugPath = false;
 bool ConsoleManager::bVisualDebugGoalPositions = false;
+bool ConsoleManager::bVisualDebugOpenClosed = false;
 
 void ConsoleManager::ToggleDebugPath()
 {
@@ -11,4 +12,9 @@ void ConsoleManager::ToggleDebugPath()
 void ConsoleManager::ToggleDebugGoalPositions()
 {
 	bVisualDebugGoalPositions = !bVisualDebugGoalPositions;
+}
+
+void ConsoleManager::ToggleDebugOpenClosed()
+{
+	bVisualDebugOpenClosed = !bVisualDebugOpenClosed;
 }

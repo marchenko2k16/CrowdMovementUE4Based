@@ -1,5 +1,6 @@
 #include "Grid.h"
 #include "GraphNode.h"
+#include "Misc/Constants.h"
 
 Grid::~Grid()
 {
@@ -35,7 +36,7 @@ GraphNode* Grid::GetGraphNodeMutable(int32 Row, int32 Column)
 	{
 		return nullptr;
 	}
-	if (!NodePool.IsValidIndex(Column))
+	if (!NodePool.Last().IsValidIndex(Column))
 	{
 		return nullptr;
 	}
@@ -89,6 +90,26 @@ TArray<GraphNode*> Grid::GetNodeNeighbors(const GraphNode* InNode)
 		}
 	}
 	return Neighbors;
+}
+
+void Grid::ModifyBaseWeights()
+{
+	for (auto& NodeRow : NodePool)
+	{
+		for (auto& Node : NodeRow)
+		{
+			float AdditionalBaseWeight = 0.f;
+			for (const auto Neighbor : GetNodeNeighbors(Node))
+			{
+				if (!Neighbor->IsTraversable())
+				{
+					AdditionalBaseWeight += Constants::NonTraversableNeighborIncreasingCost;
+				}
+			}
+			const float NewStepCost = Node->GetStepCost()+AdditionalBaseWeight;
+			Node->SetStepCost(NewStepCost);
+		}
+	}
 }
 
 // todo : am : get rid of this tricky smelly code :(

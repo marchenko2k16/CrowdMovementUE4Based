@@ -16,8 +16,15 @@
 //
 #include "Crowd/AgentSpawner.h"
 #include "Crowd/Crowd.h"
-#include "Kismet/GameplayStatics.h"
 #include "MyProjectGameMode.h"
+#include "Misc/ConsoleManager.h"
+#include "Algo/GridGenerator.h"
+#include "Misc/Constants.h"
+//
+
+// UE4
+#include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 //
 
 AMyProjectCharacter::AMyProjectCharacter()
@@ -87,6 +94,9 @@ void AMyProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AMyProjectCharacter::OnResetVR);
 
 	PlayerInputComponent->BindAction("MoveCrowd", IE_Pressed, this, &AMyProjectCharacter::MoveCrowdToPlayer);
+	PlayerInputComponent->BindAction("ShowDebugPath", IE_Pressed, this, &AMyProjectCharacter::ToggleDebugPath);
+	PlayerInputComponent->BindAction("ShowDebugGoal", IE_Pressed, this, &AMyProjectCharacter::ToggleDebugGoalPositions);
+	PlayerInputComponent->BindAction("ShowOpenClosed", IE_Pressed, this, &AMyProjectCharacter::ToggleDebugOpenClosed);
 }
 
 
@@ -99,8 +109,69 @@ void AMyProjectCharacter::MoveCrowdToPlayer()
 		return;
 	}
 
+	const UWorld* GameWorld = AMyProjectGameMode::GetGameWorld();
+	if (!GameWorld)
+	{
+		return;
+	}
+	if (!EnsureGridExists())
+	{
+		const FVector PositionAheadPlayer = GetPositionAheadPlayer();
+		const FString ErrorText = "No grid exists, create before moving crowd";
+		DrawDebugString(GameWorld, PositionAheadPlayer, ErrorText, nullptr, FColor::Cyan, 5.f);
+		return;
+	}
+
 	const FVector CurrentLocation = GetActorLocation();
+
+	DrawDebugLine(GameWorld, CurrentLocation+Constants::DebugVectorZOffset*2, CurrentLocation-Constants::DebugVectorZOffset,
+	              FColor::White, true, 30.f, 0, 20);
+
 	Crowd->RequestMovementToGoal(CurrentLocation);
+}
+
+bool AMyProjectCharacter::EnsureGridExists()
+{
+	const auto GridGenerator = AMyProjectGameMode::GetGridGenerator();
+	if (!GridGenerator)
+	{
+		return false;
+	}
+
+	if (!GridGenerator->GetGlobalGridData())
+	{
+		return false;
+	}
+
+	return true;
+}
+
+FVector AMyProjectCharacter::GetPositionAheadPlayer()
+{
+	constexpr float ZCoordinateOffset = 50.f;
+	constexpr float PlayerForwardVectorOffset = 100.f;
+
+	const FVector PlayerLocation = GetActorLocation();
+	const FVector PlayerForwardVector = GetActorForwardVector();
+
+	const FVector ZCoordinateOffsetVector = FVector(0.f, 0.f, ZCoordinateOffset);
+
+	return PlayerLocation+PlayerForwardVector*PlayerForwardVectorOffset+ZCoordinateOffsetVector;
+}
+
+void AMyProjectCharacter::ToggleDebugPath()
+{
+	ConsoleManager::ToggleDebugPath();
+}
+
+void AMyProjectCharacter::ToggleDebugGoalPositions()
+{
+	ConsoleManager::ToggleDebugGoalPositions();
+}
+
+void AMyProjectCharacter::ToggleDebugOpenClosed()
+{
+	ConsoleManager::ToggleDebugOpenClosed();
 }
 
 void AMyProjectCharacter::OnResetVR()

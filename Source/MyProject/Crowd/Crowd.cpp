@@ -16,7 +16,7 @@ Crowd::~Crowd()
 	//delete Formation;
 }
 
-void Crowd::ReinitCrowdDirector()
+void Crowd::ReinitializeCrowdDirector()
 {
 	ACrowdDirector* LocalCrowdDirector = AAgentSpawner::SpawnCrowdDirector(Formation->GetAgentPoolMutable().Last().Last()->GetWorld());
 
@@ -49,7 +49,7 @@ TArray<TArray<FVector>>& Crowd::GetCrowdOffsetsConst() const
 }
 
 //void Crowd::SetCrowdFormation(CrowdFormation* InFormation)
-void Crowd::SetCrowdFormation(TSharedPtr<CrowdFormation>  InFormation)
+void Crowd::SetCrowdFormation(TSharedPtr<CrowdFormation> InFormation)
 {
 	Formation = InFormation;
 	//Formation = MakeShared<CrowdFormation>(*InFormation);
@@ -57,10 +57,13 @@ void Crowd::SetCrowdFormation(TSharedPtr<CrowdFormation>  InFormation)
 
 void Crowd::RequestMovementToGoal(const FVector& GoalLocation)
 {
-	// TODO : AM : make smart pointer
-	
-
 	// todo : am : refactor and find simplier way
+
+	if (!Formation)
+	{
+		return;
+	}
+
 	UWorld* World = Formation->GetAgentPoolMutable()[0][0]->GetWorld();
 
 	TSharedPtr<CrowdMovementRequest> MovementRequest = MakeShared<CrowdMovementRequest>();
