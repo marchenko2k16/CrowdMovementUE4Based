@@ -63,14 +63,14 @@ void AGridGenerator::GenerateGrid()
 
 	int32 GridRow = 0;
 
-	TPair<int32, int32> NodeIndex{0, 0};
+	TPair<uint8, uint8> NodeIndex{0, 0};
 	for (float CurrentX = XMin; CurrentX<XMax; CurrentX += Constants::GridStep,GridRow++)
 	{
 		Nodes.Emplace(TArray<GraphNode*>());
 		for (float CurrentY = YMin; CurrentY<YMax; CurrentY += Constants::GridStep)
 		{
 			GraphNode* Node = new GraphNode();
-			Node->SetGridPtr(GeneratedGrid);
+			//Node->SetGridPtr(GeneratedGrid);
 			Node->SetStepCost(Constants::BaseStepCost);
 			Node->SetIndex(NodeIndex);
 

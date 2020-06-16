@@ -48,7 +48,7 @@ void ACrowdDirector::ProcessCrowdMovementRequest()
 	if (MovementRequest->HasProcessedRequest())
 	{
 		//constexpr float TimeToPassSec = 1.7f;
-		constexpr float TimeToPassSec = 1.5f;
+		constexpr float TimeToPassSec = 1.f;
 		const float CurrentTime = GetWorld()->GetRealTimeSeconds();
 		if (LastRequestProcessedTimestamp>=CurrentTime-TimeToPassSec )
 		{

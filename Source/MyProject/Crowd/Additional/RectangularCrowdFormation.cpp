@@ -70,18 +70,18 @@ void RectangularCrowdFormation::GenerateAgentColumnsLocations(FVector CrowdCente
 			NewPosition.Z = 0;
 
 			Offsets[Row].Emplace(NewPosition);
-			DrawDebugLine(GameWorld, Offsets[Row][Column]+Constants::DebugVectorZOffset*2,
-			              Offsets[Row][Column]-Constants::DebugVectorZOffset,
-			              FColor::Red, false, 3.f, 0, 20);
+			//DrawDebugLine(GameWorld, Offsets[Row][Column]+Constants::DebugVectorZOffset*2,
+			//              Offsets[Row][Column]-Constants::DebugVectorZOffset,
+			//              FColor::Red, false, 3.f, 0, 20);
 		}
 		RowStartPosition += RowStepVector;
 	}
 
-	DrawDebugLine(GameWorld, TailRowLeftBound+Constants::DebugVectorZOffset*2, TailRowLeftBound-Constants::DebugVectorZOffset,
-	              FColor::White, false, 3.f, 0, 20);
-
-	DrawDebugLine(GameWorld, FrontRowRightBound+Constants::DebugVectorZOffset*2, FrontRowRightBound-Constants::DebugVectorZOffset,
-	              FColor::Black, false, 3.f, 0, 20);
+	//DrawDebugLine(GameWorld, TailRowLeftBound+Constants::DebugVectorZOffset*2, TailRowLeftBound-Constants::DebugVectorZOffset,
+	//              FColor::White, false, 3.f, 0, 20);
+	//
+	//DrawDebugLine(GameWorld, FrontRowRightBound+Constants::DebugVectorZOffset*2, FrontRowRightBound-Constants::DebugVectorZOffset,
+	//              FColor::Black, false, 3.f, 0, 20);
 
 	//Offsets.Emplace(TArray<FVector>());
 	////Offsets[0].Emplace(CrowdCenter - FVector{0,0,200});

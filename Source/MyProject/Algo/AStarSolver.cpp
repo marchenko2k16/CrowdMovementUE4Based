@@ -82,7 +82,20 @@ TTuple<ESearchResult, Path*> AStarSolver::FindPath(Grid* Grid, GraphNode* StartN
 	Path* GeneratedPath = new Path();
 
 	GeneratedPath->PathGraphNodes = PathPoints;
+	
 	Grid->ResetCalculations();
+	for (auto& Node : OpenNodes)
+	{
+		Node->SetParentNode(nullptr);
+		Node->SetHCost(0.f);
+		Node->SetGCost(0.f);
+	}
+	for (auto& Node : ClosedNodes)
+	{
+		Node->SetParentNode(nullptr);
+		Node->SetHCost(0.f);
+		Node->SetGCost(0.f);
+	}
 	return TTuple<ESearchResult, Path*>(SearchResult, GeneratedPath);
 }
 

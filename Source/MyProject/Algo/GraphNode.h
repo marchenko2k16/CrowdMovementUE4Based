@@ -12,22 +12,20 @@ class GraphNode
 private:
 
 	FVector Location = FVector::ZeroVector;
-
-	Grid* NodeGrid = nullptr;
 	GraphNode* ParentNode = nullptr;
 
 	float GCost = 0.f;
 	float HCost = 0.f;
 	float NodeStepCost = 0.f;
-	EGraphNodeTraversability Traversability = EGraphNodeTraversability::NonTraversable;
 
-	TPair<int32, int32> Index;
+	TPair<uint8, uint8> Index;
+	EGraphNodeTraversability Traversability = EGraphNodeTraversability::NonTraversable;
 
 public:
 	GraphNode() = default;
 	~GraphNode() = default;
 
-	void SetGridPtr(Grid* InGrid);
+	//void SetGridPtr(Grid* InGrid);
 
 	void SetGCost(float_t InCost);
 	void SetHCost(float_t InCost);
@@ -37,7 +35,7 @@ public:
 	void SetParentNode(GraphNode* InParent);
 	void SetTraversability(EGraphNodeTraversability InTraversability);
 
-	void SetIndex(TPair<int32, int32> InIndex);
+	void SetIndex(TPair<uint8, uint8> InIndex);
 
 	float_t GetGCost() const;
 	float_t GetHCost() const;
@@ -47,7 +45,7 @@ public:
 	GraphNode* GetParentNode() const;
 
 	FVector GetLocation() const;
-	const TPair<int32, int32>& GetIndex() const;
+	const TPair<uint8, uint8>& GetIndex() const;
 
 	EGraphNodeTraversability GetTraversability() const;
 

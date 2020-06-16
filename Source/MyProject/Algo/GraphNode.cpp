@@ -1,10 +1,4 @@
 #include "GraphNode.h"
-#include "Grid.h"
-
-void GraphNode::SetGridPtr(Grid* InGrid)
-{
-	NodeGrid = InGrid;
-}
 
 void GraphNode::SetGCost(float_t InCost)
 {
@@ -36,7 +30,7 @@ void GraphNode::SetTraversability(EGraphNodeTraversability InTraversability)
 	Traversability = InTraversability;
 }
 
-void GraphNode::SetIndex(TPair<int32, int32> InIndex)
+void GraphNode::SetIndex(TPair<uint8, uint8> InIndex)
 {
 	Index = InIndex;
 }
@@ -71,7 +65,7 @@ FVector GraphNode::GetLocation() const
 	return Location;
 }
 
-const TPair<int32, int32>& GraphNode::GetIndex() const
+const TPair<uint8, uint8>& GraphNode::GetIndex() const
 {
 	return Index;
 }
